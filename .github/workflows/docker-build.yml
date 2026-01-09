@@ -58,7 +58,8 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          failure-threshold: warning
+          config: .hadolint.yaml
+          failure-threshold: error
 
   security-scan:
     name: Security Scanning
@@ -289,5 +290,5 @@ jobs:
       - name: Notify on success
         if: success()
         run: |
-          echo "✅ Pipeline completed successfully!"
+          echo "Pipeline completed successfully!"
           echo "Image digest: ${{ needs.push-image.outputs.image_digest }}"

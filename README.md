@@ -24,11 +24,15 @@ docker-model-runner/
 ├── README.md
 ├── QUICKSTART.md
 ├── ADVANCED.md
+├── LOCAL_TESTING.md
 ├── .gitignore
 ├── .dockerignore
+├── .hadolint.yaml
 ├── Dockerfile
 ├── requirements.txt
 ├── app.py
+├── lint-check.sh
+├── Makefile
 └── .github/
     └── workflows/
         └── docker-build.yml
@@ -62,6 +66,29 @@ The Dockerfile implements several security best practices:
 ## Quick Start
 
 See [QUICKSTART.md](QUICKSTART.md) for detailed local testing instructions.
+
+## Local Testing
+
+Before pushing to GitHub, test everything locally:
+
+```bash
+# Install development dependencies
+make install-dev
+
+# Run linting checks
+make lint
+
+# Auto-fix formatting issues
+make format
+
+# Build and test Docker image
+make test
+
+# Test GitHub Actions locally (requires act)
+make test-actions
+```
+
+For complete local testing instructions, including GitHub Actions simulation with `act`, see [LOCAL_TESTING.md](LOCAL_TESTING.md).
 
 ## GitHub Actions Workflow
 
@@ -314,6 +341,3 @@ Add new routes in `app.py` following the Flask pattern.
 - [Trivy Security Scanner](https://aquasecurity.github.io/trivy/)
 - [Docker Security Best Practices](https://docs.docker.com/develop/security-best-practices/)
 
-## License
-
-MIT License - feel free to use and modify as needed.

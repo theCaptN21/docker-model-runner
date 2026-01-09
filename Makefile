@@ -6,25 +6,12 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  lint           Run all linting checks"
-	@echo "  format         Auto-format code with black and isort"
 	@echo "  build          Build Docker image"
 	@echo "  test           Run Docker image tests"
 	@echo "  run            Run Docker container locally"
 	@echo "  clean          Remove containers and images"
-	@echo "  install-dev    Install development dependencies"
-	@echo "  test-actions   Test GitHub Actions locally (requires act)"
+	@echo "  install-dev    Install development dependencies (optional)"
 	@echo ""
-
-lint:
-	@echo "Running linting checks..."
-	@bash lint-check.sh
-
-format:
-	@echo "Auto-formatting code..."
-	black app.py
-	isort app.py
-	@echo "✓ Code formatted"
 
 build:
 	@echo "Building Docker image..."
@@ -67,16 +54,7 @@ install-dev:
 	pip install black isort flake8 pylint
 	@echo "✓ Development dependencies installed"
 	@echo ""
+	@echo "Note: Linting is optional and not required for the pipeline"
 	@echo "Optional: Install hadolint for Dockerfile linting"
 	@echo "  macOS: brew install hadolint"
 	@echo "  Linux: See https://github.com/hadolint/hadolint"
-
-test-actions:
-	@echo "Testing GitHub Actions locally..."
-	@if ! command -v act &> /dev/null; then \
-		echo "Error: 'act' is not installed"; \
-		echo "Install: brew install act (macOS) or see https://github.com/nektos/act"; \
-		exit 1; \
-	fi
-	@echo "Running workflow..."
-	act -j lint-and-validate

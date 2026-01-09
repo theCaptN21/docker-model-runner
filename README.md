@@ -155,7 +155,16 @@ To create a Docker Hub access token:
 
 ### Step 4: Update Docker Hub Repository Name
 
-Edit `.github/workflows/docker-build.yml` and replace `YOUR_DOCKERHUB_USERNAME/docker-model-runner` with your actual Docker Hub username.
+**Note:** This step is only needed if you plan to push images to Docker Hub. The build and test stages will work without this.
+
+Edit `.github/workflows/docker-build.yml` and replace `YOUR_DOCKERHUB_USERNAME/docker-model-runner` with your actual Docker Hub username in the `env:` section at the top:
+
+```yaml
+env:
+  DOCKER_IMAGE: your-dockerhub-username/docker-model-runner
+```
+
+This variable is only used when pushing images to Docker Hub.
 
 ### Step 5: Test Locally
 
@@ -340,4 +349,3 @@ Add new routes in `app.py` following the Flask pattern.
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [Trivy Security Scanner](https://aquasecurity.github.io/trivy/)
 - [Docker Security Best Practices](https://docs.docker.com/develop/security-best-practices/)
-

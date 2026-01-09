@@ -120,13 +120,13 @@ jobs:
         with:
           context: .
           load: true
-          tags: ${{ env.DOCKER_IMAGE }}:test
+          tags: model-runner:test
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       
       - name: Test Docker image - Start container
         run: |
-          docker run -d --name test-container -p 5000:5000 ${{ env.DOCKER_IMAGE }}:test
+          docker run -d --name test-container -p 5000:5000 model-runner:test
           echo "Waiting for container to be ready..."
           sleep 30
       
@@ -172,7 +172,7 @@ jobs:
       - name: Scan Docker image for vulnerabilities
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.DOCKER_IMAGE }}:test
+          image-ref: model-runner:test
           format: 'table'
           exit-code: '0'
           severity: 'CRITICAL,HIGH'

@@ -1,7 +1,7 @@
 import logging
 
-from flask import Flask, jsonify, request
-from transformers import pipeline
+from flask import Flask, jsonify, request # type: ignore
+from transformers import pipeline # type: ignore
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -11,23 +11,23 @@ app = Flask(__name__)
 
 # Initialize model (this happens once when container starts)
 logger.info("Loading model...")
-generator = pipeline('text-generation', model='distilgpt2')
+generator = pipeline("text-generation", model="distilgpt2")
 logger.info("Model loaded successfully")
 
 
-@app.route('/health', methods=['GET'])
+@app.route("/health", methods=["GET"])
 def health():
     """Health check endpoint"""
     return jsonify({"status": "healthy"}), 200
 
 
-@app.route('/generate', methods=['POST'])
+@app.route("/generate", methods=["POST"])
 def generate():
     """Generate text based on a prompt"""
     try:
         data = request.get_json()
-        prompt = data.get('prompt', '')
-        max_length = data.get('max_length', 50)
+        prompt = data.get("prompt", "")
+        max_length = data.get("max_length", 50)
 
         if not prompt:
             return jsonify({"error": "No prompt provided"}), 400

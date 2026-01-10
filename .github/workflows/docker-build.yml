@@ -19,7 +19,7 @@ on:
         default: ''
 
 env:
-  DOCKER_IMAGE: YOUR_DOCKERHUB_USERNAME/docker-model-runner
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/docker-model-runner
   PYTHON_VERSION: '3.11'
 
 jobs:

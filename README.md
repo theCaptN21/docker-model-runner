@@ -42,7 +42,7 @@ docker-model-runner/
 1. Create new repository on GitHub: `docker-model-runner`
 2. Clone locally:
 ```bash
-git clone https://github.com/YOUR_USERNAME/docker-model-runner.git
+git clone https://github.com/theCaptN21/docker-model-runner.git
 cd docker-model-runner
 ```
 

@@ -19,10 +19,36 @@ on:
         default: ''
 
 env:
-  DOCKER_IMAGE: YOUR_DOCKERHUB_USERNAME/docker-model-runner
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/docker-model-runner
   PYTHON_VERSION: '3.11'
 
 jobs:
+  sonarcloud:
+    name: SonarCloud Code Analysis (Optional)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+      
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
+            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.python.version=3.11
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/venv/**,**/__pycache__/**,**/node_modules/**
+        continue-on-error: true
+
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest

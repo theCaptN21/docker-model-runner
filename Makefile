@@ -1,4 +1,4 @@
-.PHONY: help lint format build test run clean install-dev test-actions
+.PHONY: help build test run clean
 
 help:
 	@echo "Docker Model Runner - Development Commands"
@@ -6,11 +6,10 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  build          Build Docker image"
-	@echo "  test           Run Docker image tests"
-	@echo "  run            Run Docker container locally"
-	@echo "  clean          Remove containers and images"
-	@echo "  install-dev    Install development dependencies (optional)"
+	@echo "  build    Build Docker image locally"
+	@echo "  test     Build and run full test suite"
+	@echo "  run      Run Docker container on port 5000"
+	@echo "  clean    Stop and remove containers/images"
 	@echo ""
 
 build:
@@ -39,22 +38,13 @@ test: build
 
 run: build
 	@echo "Running container on http://localhost:5000"
-	docker run -p 5000:5000 --name model-runner model-runner:local
+	@echo "Press Ctrl+C to stop"
+	@echo ""
+	docker run --rm -p 5000:5000 --name model-runner model-runner:local
 
 clean:
 	@echo "Cleaning up..."
-	-docker stop model-runner test-model-runner 2>/dev/null || true
-	-docker rm model-runner test-model-runner 2>/dev/null || true
-	-docker rmi model-runner:local 2>/dev/null || true
+	-@docker stop model-runner test-model-runner 2>/dev/null || true
+	-@docker rm model-runner test-model-runner 2>/dev/null || true
+	-@docker rmi model-runner:local 2>/dev/null || true
 	@echo "✓ Cleanup complete"
-
-install-dev:
-	@echo "Installing development dependencies..."
-	pip install --upgrade pip
-	pip install black isort flake8 pylint
-	@echo "✓ Development dependencies installed"
-	@echo ""
-	@echo "Note: Linting is optional and not required for the pipeline"
-	@echo "Optional: Install hadolint for Dockerfile linting"
-	@echo "  macOS: brew install hadolint"
-	@echo "  Linux: See https://github.com/hadolint/hadolint"

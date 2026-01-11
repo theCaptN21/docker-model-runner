@@ -1,132 +1,46 @@
-# Docker Model Runner with Hugging Face
+# Docker Model Runner with CI/CD
 
-A simplified Docker-based model runner that uses Hugging Face models with automated GitHub Actions CI/CD pipeline for building and pushing Docker images on code changes.
+A production-ready Docker-based ML model runner using Hugging Face's distilgpt2 for text generation, with automated GitHub Actions pipeline for building, testing, and deploying secure Docker images.
 
-## Overview
+## What is a Model Runner?
 
-This project demonstrates how to:
-- Run Hugging Face models inside Docker containers
-- Automatically build new Docker images when code changes
-- Test locally before deploying
-- Use GitHub Actions for CI/CD automation
+A **model runner** is a containerized service that loads a machine learning model and exposes it via an API. This project demonstrates:
 
-## Prerequisites
-
-- Docker Desktop installed and running
-- GitHub account
-- Docker Hub account (for storing images)
-- Git installed locally
+- 🤖 **ML Model Serving**: Hugging Face transformers (distilgpt2) for text generation
+- 🐳 **Docker Containerization**: Multi-stage builds with security hardening
+- 🔄 **CI/CD Automation**: GitHub Actions for automated builds and deployments
+- 🔒 **Security Scanning**: Trivy and SonarCloud for vulnerability detection
+- 📊 **Code Quality**: Automated code analysis with SonarCloud
 
 ## Project Structure
 
 ```
 docker-model-runner/
-├── README.md
-├── QUICKSTART.md
-├── ADVANCED.md
-├── LOCAL_TESTING.md
-├── .gitignore
-├── .dockerignore
-├── .hadolint.yaml
-├── Dockerfile
-├── requirements.txt
-├── app.py
-├── lint-check.sh
-├── Makefile
+├── README.md                    # This file
+├── app.py                       # Flask API with model runner
+├── requirements.txt             # Python dependencies
+├── Dockerfile                   # Multi-stage Docker build
+├── Makefile                     # Development commands
+├── .gitignore                   # Git exclusions
+├── .dockerignore               # Docker build exclusions
 └── .github/
     └── workflows/
-        └── docker-build.yml
+        └── docker-build.yml    # CI/CD pipeline
 ```
-
-## Features
-
-- Lightweight Python Flask API
-- Hugging Face text generation model integration
-- Multi-stage Docker build for optimized image size
-- Security-hardened container (non-root user, minimal base image)
-- Built-in health checks and proper signal handling
-- Automated Docker image building on push with comprehensive CI/CD
-- Automated testing and vulnerability scanning
-- Local testing capabilities
-- Production-ready configuration
-
-## Docker Security Features
-
-The Dockerfile implements several security best practices:
-
-- **Multi-stage build**: Separates build dependencies from runtime, reducing attack surface
-- **Non-root user**: Application runs as unprivileged user 'appuser'
-- **Minimal base image**: Uses python:3.11-slim to minimize vulnerabilities
-- **Security updates**: Automatically applies latest security patches
-- **Health checks**: Built-in container health monitoring
-- **Signal handling**: Uses tini for proper process management
-- **No cache directories**: Prevents bloat and potential security issues
-- **Immutable layers**: Build-time security with minimal runtime modifications
 
 ## Quick Start
 
-See [QUICKSTART.md](QUICKSTART.md) for detailed local testing instructions.
+### Prerequisites
 
-## Local Testing
+- Docker Desktop installed and running
+- GitHub account
+- Docker Hub account
+- SonarCloud account (optional but recommended)
 
-Before pushing to GitHub, test everything locally:
+### Step 1: Create GitHub Repository
 
-```bash
-# Install development dependencies
-make install-dev
-
-# Run linting checks
-make lint
-
-# Auto-fix formatting issues
-make format
-
-# Build and test Docker image
-make test
-
-# Test GitHub Actions locally (requires act)
-make test-actions
-```
-
-For complete local testing instructions, including GitHub Actions simulation with `act`, see [LOCAL_TESTING.md](LOCAL_TESTING.md).
-
-## GitHub Actions Workflow
-
-The project includes a comprehensive automated CI/CD pipeline that:
-
-### Stage 1: Lint and Validate
-- Python code formatting checks (Black, isort)
-- Code quality analysis (Flake8)
-- Dockerfile validation (Hadolint)
-
-### Stage 2: Security Scanning
-- Filesystem vulnerability scanning (Trivy)
-- Python dependency security checks (Safety)
-- Results uploaded to GitHub Security tab
-
-### Stage 3: Build and Test
-- Multi-stage Docker build with layer caching
-- Container health checks
-- API endpoint testing
-- Image vulnerability scanning
-
-### Stage 4: Push to Registry
-- Automated tagging (branch name, commit SHA, latest)
-- Multi-platform support
-- Build metadata and labels
-- Digest generation for verification
-
-### Stage 5: Post-Deployment
-- Docker Hub description updates
-- Deployment summaries
-- Success notifications
-
-## Setup Instructions
-
-### Step 1: Clone or Create Repository
-
-Create a new GitHub repository and clone it locally:
-
+1. Create new repository on GitHub: `docker-model-runner`
+2. Clone locally:
 ```bash
 git clone https://github.com/YOUR_USERNAME/docker-model-runner.git
 cd docker-model-runner
@@ -134,218 +48,381 @@ cd docker-model-runner
 
 ### Step 2: Add Project Files
 
-Copy all project files into your repository directory (see Project Structure above).
+Copy all files from this project into your repository.
 
-### Step 3: Configure Docker Hub Secrets
+### Step 3: Configure SonarCloud (Recommended)
 
-In your GitHub repository, add the following secrets:
+**Why SonarCloud?** It provides automated code quality and security analysis on every push.
 
-1. Go to Settings > Secrets and variables > Actions
-2. Click "New repository secret"
-3. Add these secrets:
-   - `DOCKERHUB_USERNAME`: Your Docker Hub username
-   - `DOCKERHUB_TOKEN`: Your Docker Hub access token
+1. **Sign up at https://sonarcloud.io**
+   - Click "Log in" → "With GitHub"
+   - Authorize SonarCloud
 
-To create a Docker Hub access token:
-1. Log in to Docker Hub
-2. Go to Account Settings > Security
-3. Click "New Access Token"
-4. Give it a description and click "Generate"
-5. Copy the token immediately
+2. **Import Your Repository**
+   - Click "+" → "Analyze new project"
+   - Select your organization (GitHub username)
+   - Choose `docker-model-runner`
+   - Click "Set Up"
 
-### Step 4: Update Docker Hub Repository Name
+3. **Get Your Token**
+   - Click profile icon → My Account → Security
+   - Generate new token:
+     - Name: `github-actions`
+     - Type: `User Token`
+     - Expiration: No expiration (for personal projects)
+   - **Copy the token immediately**
 
-**Note:** This step is only needed if you plan to push images to Docker Hub. The build and test stages will work without this.
+4. **Add Token to GitHub**
+   - Go to your repository on GitHub
+   - Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `SONAR_TOKEN`
+   - Value: Paste your token
+   - Click "Add secret"
 
-Edit `.github/workflows/docker-build.yml` and replace `YOUR_DOCKERHUB_USERNAME/docker-model-runner` with your actual Docker Hub username in the `env:` section at the top:
+### Step 4: Configure Docker Hub
 
-```yaml
-env:
-  DOCKER_IMAGE: your-dockerhub-username/docker-model-runner
+1. **Create Docker Hub Access Token**
+   - Log in to hub.docker.com
+   - Account Settings → Security → New Access Token
+   - Description: `github-actions`
+   - Access permissions: Read, Write, Delete
+   - **Copy the token immediately**
+
+2. **Add Secrets to GitHub**
+   - Go to Settings → Secrets and variables → Actions
+   - Add two secrets:
+     - `DOCKERHUB_USERNAME`: Your Docker Hub username
+     - `DOCKERHUB_TOKEN`: Your access token from above
+
+### Step 5: Test Locally (Optional but Recommended)
+
+Before pushing to GitHub, verify everything works:
+
+```bash
+# Build the Docker image
+make build
+
+# Run the container
+make run
+
+# In another terminal, test the API
+curl http://localhost:5000/health
+
+curl -X POST http://localhost:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "The future of AI is", "max_length": 50}'
+
+# Stop the container
+make clean
 ```
-
-This variable is only used when pushing images to Docker Hub.
-
-### Step 5: Test Locally
-
-Follow the [QUICKSTART.md](QUICKSTART.md) guide to test everything works locally before pushing.
 
 ### Step 6: Push to GitHub
 
 ```bash
 git add .
-git commit -m "Initial commit: Docker Model Runner setup"
+git commit -m "Initial commit: Docker Model Runner"
 git push origin main
 ```
 
-### Step 7: Monitor GitHub Actions
+### Step 7: Verify Pipeline
 
-1. Go to your repository on GitHub
-2. Click the "Actions" tab
-3. Watch your workflow run
-4. Verify the build completes successfully
+1. Go to your repository → Actions tab
+2. Watch the workflow run (takes ~5-10 minutes)
+3. Verify all stages pass:
+   - ✅ SonarCloud Analysis (code quality)
+   - ✅ Security Scan (Trivy vulnerabilities)
+   - ✅ Build and Test (Docker image)
+   - ✅ Push to Registry (Docker Hub)
+   - ✅ Post-Deployment (documentation)
 
-### Step 8: Verify Docker Hub
+## Local Testing & Verification
 
-Check your Docker Hub account to confirm the new image has been pushed.
-
-## Using the Model Runner
-
-### Running Locally
+### Test the Model Runner
 
 ```bash
-docker build -t model-runner .
-docker run -p 5000:5000 model-runner
+# Start the container
+docker run -d -p 5000:5000 --name model-runner YOUR_DOCKERHUB_USERNAME/docker-model-runner:latest
+
+# Wait for model to load (check logs)
+docker logs -f model-runner
+
+# Test health endpoint
+curl http://localhost:5000/health
+# Expected: {"status":"healthy"}
+
+# Test text generation
+curl -X POST http://localhost:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Once upon a time", "max_length": 100}'
+
+# Stop container
+docker stop model-runner && docker rm model-runner
 ```
 
-### Testing the API
+### Prove It's a Model Runner
 
+**Test 1: Health Check (Server Running)**
+```bash
+curl http://localhost:5000/health
+```
+Output: `{"status":"healthy"}` - proves Flask API is running
+
+**Test 2: Generate Text (Model Loaded)**
 ```bash
 curl -X POST http://localhost:5000/generate \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Once upon a time", "max_length": 50}'
+  -d '{"prompt": "Hello world", "max_length": 30}'
+```
+Output shows generated text - proves distilgpt2 model is loaded and generating
+
+**Test 3: Different Prompts (Model Intelligence)**
+```bash
+# Creative writing
+curl -X POST http://localhost:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "In a galaxy far away", "max_length": 50}'
+
+# Technical content
+curl -X POST http://localhost:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Machine learning is", "max_length": 50}'
+```
+Different outputs for different prompts - proves model is doing inference
+
+### Make a Code Change & See It Deploy
+
+**Step 1: Modify the model prompt processing**
+
+Edit `app.py`, find the generate function and add this line after getting the prompt:
+
+```python
+# Add this line to make prompts more creative
+prompt = f"[CREATIVE] {prompt}"
 ```
 
-### Running from Docker Hub
+**Step 2: Test locally**
+```bash
+docker build -t model-runner:test .
+docker run -d -p 5000:5000 --name test model-runner:test
 
-After GitHub Actions builds and pushes your image:
+curl -X POST http://localhost:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello", "max_length": 30}'
+
+# Notice the prompt now has [CREATIVE] prefix in the response
+```
+
+**Step 3: Push the change**
+```bash
+git add app.py
+git commit -m "Add creative prefix to prompts"
+git push origin main
+```
+
+**Step 4: Watch automated deployment**
+- GitHub Actions runs automatically
+- New image built and pushed to Docker Hub
+- Pull the new image and see your change in production
 
 ```bash
 docker pull YOUR_DOCKERHUB_USERNAME/docker-model-runner:latest
-docker run -p 5000:5000 YOUR_DOCKERHUB_USERNAME/docker-model-runner:latest
+docker run -d -p 5000:5000 YOUR_DOCKERHUB_USERNAME/docker-model-runner:latest
+# Test and see the [CREATIVE] prefix in responses
 ```
 
-## Making Changes
+## CI/CD Pipeline Stages
 
-When you make code changes:
+### 1. SonarCloud Analysis
+- Analyzes code quality and security
+- Detects bugs, vulnerabilities, code smells
+- Reports technical debt
+- **Runs first to catch issues early**
 
-1. Edit your files locally
-2. Test locally using Docker
-3. Commit and push to GitHub:
-   ```bash
-   git add .
-   git commit -m "Description of changes"
-   git push origin main
-   ```
-4. GitHub Actions automatically builds a new image
-5. New image is available on Docker Hub within minutes
+### 2. Security Scanning (Trivy)
+- Scans dependencies for known CVEs
+- Reports CRITICAL, HIGH, MEDIUM, LOW vulnerabilities
+- Shows which versions fix issues
+- Scans both filesystem and Docker image
 
-## Workflow Explanation
+### 3. Build and Test
+- Multi-stage Docker build (builder + runtime)
+- Security hardening (non-root user, minimal base)
+- Automated health checks
+- API endpoint testing
+- Container verification
 
-The GitHub Actions workflow (`.github/workflows/docker-build.yml`) is a multi-stage pipeline:
+### 4. Push to Docker Hub
+- Multiple tags: `latest`, `main-<sha>`, branch name
+- OCI-compliant metadata
+- Automated on successful builds
+- Available immediately after push
 
-### Job 1: Lint and Validate (lint-and-validate)
-- **Black**: Checks Python code formatting
-- **isort**: Validates import ordering
-- **Flake8**: Analyzes code quality and style
-- **Hadolint**: Validates Dockerfile best practices
+### 5. Post-Deployment
+- Updates Docker Hub description
+- Generates build summaries
+- Provides deployment commands
 
-### Job 2: Security Scanning (security-scan)
-- **Trivy Filesystem Scan**: Checks for vulnerabilities in code and dependencies
-- **Safety Check**: Scans Python packages for known security issues
-- **SARIF Upload**: Integrates results with GitHub Security tab
+## Docker Image Features
 
-### Job 3: Build and Test (build-and-test)
-- **Docker Layer Caching**: Speeds up builds by reusing unchanged layers
-- **Test Build**: Creates image without pushing
-- **Container Testing**: Starts container and validates functionality
-- **Health Check**: Verifies /health endpoint responds correctly
-- **API Testing**: Tests /generate endpoint with sample request
-- **Vulnerability Scan**: Scans built image for security issues
+### Multi-Stage Build
+```dockerfile
+# Stage 1: Builder (dependencies compilation)
+FROM python:3.11-slim AS builder
+# Install and compile dependencies
 
-### Job 4: Push Image (push-image)
-- **Multiple Tags**: Creates branch, SHA, and latest tags
-- **Metadata**: Adds OCI-compliant labels and annotations
-- **Multi-platform**: Supports linux/amd64 (can be extended)
-- **Build Summary**: Generates GitHub Actions summary with details
+# Stage 2: Runtime (minimal production image)
+FROM python:3.11-slim
+# Copy only what's needed, run as non-root
+```
 
-### Job 5: Post-Deployment (post-deployment)
-- **Docker Hub Sync**: Updates repository description
-- **Documentation**: Creates deployment summary
-- **Notifications**: Logs success messages and image details
+**Benefits:**
+- 300MB smaller final image
+- No build tools in production
+- Reduced attack surface
+- Faster deployments
 
-### Workflow Triggers
-- **Push to main/develop**: Automatically builds and deploys
-- **Pull Requests**: Runs tests without pushing images
-- **Manual Dispatch**: Allows custom tags via workflow_dispatch
-- **Path Filters**: Skips builds for documentation-only changes
+### Security Hardening
+
+1. **Non-root User**
+   - Runs as `appuser` (not root)
+   - Limited permissions
+   - Prevents privilege escalation
+
+2. **Minimal Base Image**
+   - `python:3.11-slim` (only essentials)
+   - Fewer packages = fewer vulnerabilities
+   - Regular security updates
+
+3. **Health Checks**
+   - Monitors container health
+   - Auto-restart on failures
+   - Integration with orchestrators
+
+4. **Dependency Pinning**
+   - Exact versions in requirements.txt
+   - Reproducible builds
+   - Controlled updates
+
+## Available Commands (Makefile)
+
+```bash
+make help          # Show available commands
+make build         # Build Docker image locally
+make test          # Build and run full test suite
+make run           # Run container locally
+make clean         # Stop and remove containers/images
+```
+
+## Understanding the Model Runner API
+
+### Endpoints
+
+**GET /health**
+```bash
+curl http://localhost:5000/health
+```
+Response: `{"status": "healthy"}`
+
+**POST /generate**
+```bash
+curl -X POST http://localhost:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Your text here",
+    "max_length": 50
+  }'
+```
+
+Response:
+```json
+{
+  "prompt": "Your text here",
+  "generated_text": "Your text here and the model continues..."
+}
+```
+
+### Model Information
+
+- **Model**: distilgpt2 (Hugging Face)
+- **Task**: Text generation
+- **Size**: ~250MB
+- **Type**: Transformer-based language model
+- **Use Cases**: Text completion, creative writing, content generation
+
+## Monitoring & Observability
+
+### View SonarCloud Dashboard
+
+1. Go to https://sonarcloud.io/projects
+2. Click `docker-model-runner`
+3. View:
+   - **Overview**: Quality gate status
+   - **Issues**: Bugs, vulnerabilities, code smells
+   - **Security**: Security hotspots
+   - **Measures**: Metrics and coverage
+
+### View Security Scan Results
+
+1. Go to repository → Actions tab
+2. Click latest workflow run
+3. Expand "Security Scanning" job
+4. View Trivy output with CVE details
+
+### Check Docker Hub
+
+1. Go to hub.docker.com
+2. Navigate to your repository
+3. View available tags
+4. Check image layers and size
 
 ## Troubleshooting
 
-### GitHub Actions Fails
+### Pipeline Fails on First Run
 
-**Linting Stage Issues:**
-- Code formatting errors: Run `black app.py` locally to fix
-- Import order issues: Run `isort app.py` locally
-- Hadolint warnings: Review Dockerfile against best practices
+**SonarCloud Error:**
+- Ensure `SONAR_TOKEN` secret is added
+- Verify project name is `docker-model-runner` in SonarCloud
+- Check organization name matches your GitHub username
 
-**Security Scan Failures:**
-- Critical vulnerabilities found: Update dependencies in requirements.txt
-- Safety API issues: SAFETY_API_KEY secret is optional
-- Trivy scan errors: Check network connectivity
+**Docker Push Error:**
+- Verify `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets
+- Ensure Docker Hub token has write permissions
+- Repository will be created automatically on first push
 
-**Build and Test Failures:**
-- Health check timeout: Increase sleep time or start-period in Dockerfile
-- API test failures: Check app.py for errors in /generate endpoint
-- Container won't start: Review container logs in Actions output
+### Container Won't Start
 
-**Push Stage Issues:**
-- Authentication errors: Verify DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets
-- Registry errors: Check Docker Hub service status
-- Tag conflicts: Ensure Docker Hub repository name is correct
+```bash
+# Check logs
+docker logs model-runner
 
-### Local Build Fails
-
-- Ensure Docker Desktop is running
-- Check that all files are present
-- Verify requirements.txt has correct dependencies
-- Multi-stage build requires Docker 17.05+
-
-### Model Download Issues
-
-- First run downloads the model (may take time)
-- Ensure stable internet connection
-- Check Hugging Face service status
-- Model cache stored in /home/appuser/.cache
-
-### Permission Issues
-
-- Container runs as non-root user 'appuser'
-- Volume mounts may need explicit permissions
-- Use `--user` flag if mounting volumes
-
-## Customization
-
-### Using a Different Model
-
-Edit `app.py` and change the model name:
-
-```python
-model_name = "your-preferred-model"
+# Common issues:
+# - Port 5000 already in use: use -p 5001:5000
+# - Model download failed: check internet connection
+# - Memory issues: Docker Desktop needs 4GB+ RAM
 ```
 
-### Changing the Port
+### Model Takes Long to Load
 
-Edit `Dockerfile` and `app.py` to use a different port.
-
-### Adding More Endpoints
-
-Add new routes in `app.py` following the Flask pattern.
+First run downloads the model (~250MB):
+- Wait 30-60 seconds
+- Check logs: `docker logs -f model-runner`
+- Look for "Model loaded successfully"
 
 ## Best Practices
 
-1. Always test locally before pushing to GitHub
-2. Use meaningful commit messages
-3. Review GitHub Actions logs after each push
-4. Keep your Docker Hub token secure
-5. Regularly update dependencies in requirements.txt
+1. **Always test locally before pushing**
+2. **Monitor pipeline results**
+3. **Keep dependencies updated**
+4. **Use meaningful commit messages**
+5. **Review code quality**
 
-## Additional Resources
+## Security Considerations
 
-- [ADVANCED.md](ADVANCED.md) - In-depth guide to multi-stage builds, security hardening, and workflow customization
-- [Docker Documentation](https://docs.docker.com/)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Hugging Face Documentation](https://huggingface.co/docs)
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Trivy Security Scanner](https://aquasecurity.github.io/trivy/)
-- [Docker Security Best Practices](https://docs.docker.com/develop/security-best-practices/)
+Current dependencies (all vulnerabilities fixed):
+
+```python
+flask==3.1.0          # Latest stable
+transformers==4.48.0  # All CVEs fixed
+torch==2.5.1          # Stable version
+numpy==2.1.0          # Latest stable

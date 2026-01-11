@@ -41,8 +41,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=docker-model-runner
-            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.python.version=3.11
             -Dsonar.sources=.
             -Dsonar.exclusions=**/venv/**,**/__pycache__/**,**/node_modules/**

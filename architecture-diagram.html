@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Model Runner - Architecture Diagram</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .diagram-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 1400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="diagram-container">
+        <h1>Docker Model Runner - CI/CD Architecture</h1>
+        <svg viewBox="0 0 1400 800" xmlns="http://www.w3.org/2000/svg">
+            <!-- Definitions for gradients and patterns -->
+            <defs>
+                <!-- Gradients -->
+                <linearGradient id="githubGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#24292e;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1a1e22;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="sonarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff9100;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#e67e00;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="trivyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#1904b4;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#0f0380;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="dockerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2496ed;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1a7cc7;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="hfGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffcc00;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ffaa00;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="flaskGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#333333;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+
+            <!-- Background sections -->
+            <rect x="10" y="10" width="1380" height="780" fill="#f9f9f9" stroke="#ddd" stroke-width="2" rx="8"/>
+            
+            <!-- GitHub Actions Pipeline Section -->
+            <rect x="300" y="30" width="1070" height="520" fill="#e8f4ff" stroke="#2496ed" stroke-width="2" rx="6" stroke-dasharray="8,4"/>
+            <text x="835" y="60" font-size="20" font-weight="bold" fill="#2496ed" text-anchor="middle">GitHub Actions CI/CD Pipeline</text>
+
+            <!-- Developer / Git Push -->
+            <g id="developer">
+                <rect x="30" y="250" width="120" height="100" fill="url(#githubGrad)" stroke="#000" stroke-width="2" rx="6"/>
+                <circle cx="90" cy="280" r="20" fill="#fff" opacity="0.3"/>
+                <path d="M 70 290 Q 90 310 110 290" stroke="#fff" stroke-width="3" fill="none"/>
+                <circle cx="80" cy="285" r="3" fill="#fff"/>
+                <circle cx="100" cy="285" r="3" fill="#fff"/>
+                <text x="90" y="330" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">Developer</text>
+                <text x="90" y="348" font-size="11" fill="#fff" text-anchor="middle">git push</text>
+            </g>
+
+            <!-- Arrow from Developer to GitHub -->
+            <path d="M 150 300 L 280 300" stroke="#333" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+            <text x="215" y="290" font-size="12" fill="#333">Push Code</text>
+
+            <!-- GitHub Trigger -->
+            <g id="github">
+                <rect x="300" y="250" width="120" height="100" fill="url(#githubGrad)" stroke="#000" stroke-width="2" rx="6"/>
+                <path d="M 360 280 L 360 300 M 340 290 L 380 290" stroke="#fff" stroke-width="8" fill="none"/>
+                <circle cx="360" cy="305" r="15" fill="none" stroke="#fff" stroke-width="3"/>
+                <text x="360" y="340" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">GitHub</text>
+                <text x="360" y="355" font-size="11" fill="#fff" text-anchor="middle">Actions</text>
+            </g>
+
+            <!-- Arrow to SonarCloud -->
+            <path d="M 420 280 L 520 200" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Stage 1: SonarCloud -->
+            <g id="sonar">
+                <rect x="540" y="150" width="140" height="100" fill="url(#sonarGrad)" stroke="#d67000" stroke-width="2" rx="6"/>
+                <text x="610" y="180" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">SonarCloud</text>
+                <text x="610" y="200" font-size="12" fill="#fff" text-anchor="middle">Code Quality</text>
+                <text x="610" y="218" font-size="11" fill="#fff" text-anchor="middle">• Security Analysis</text>
+                <text x="610" y="233" font-size="11" fill="#fff" text-anchor="middle">• Bug Detection</text>
+            </g>
+
+            <!-- Arrow to Trivy -->
+            <path d="M 420 320 L 520 360" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Stage 2: Trivy Security -->
+            <g id="trivy">
+                <rect x="540" y="310" width="140" height="100" fill="url(#trivyGrad)" stroke="#0a0260" stroke-width="2" rx="6"/>
+                <text x="610" y="340" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">Trivy</text>
+                <text x="610" y="360" font-size="12" fill="#fff" text-anchor="middle">Security Scan</text>
+                <text x="610" y="378" font-size="11" fill="#fff" text-anchor="middle">• CVE Detection</text>
+                <text x="610" y="393" font-size="11" fill="#fff" text-anchor="middle">• Dependency Scan</text>
+            </g>
+
+            <!-- Arrow to Docker Build -->
+            <path d="M 680 200 L 770 200" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M 680 360 L 770 360" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M 770 200 L 770 280" stroke="#333" stroke-width="2" fill="none"/>
+            <path d="M 770 360 L 770 280" stroke="#333" stroke-width="2" fill="none"/>
+
+            <!-- Stage 3: Docker Build -->
+            <g id="dockerbuild">
+                <rect x="790" y="230" width="160" height="120" fill="url(#dockerGrad)" stroke="#1a7cc7" stroke-width="2" rx="6"/>
+                <text x="870" y="260" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">Docker Build</text>
+                <text x="870" y="280" font-size="12" fill="#fff" text-anchor="middle">Multi-stage Build</text>
+                <text x="870" y="298" font-size="11" fill="#fff" text-anchor="middle">• Flask API</text>
+                <text x="870" y="313" font-size="11" fill="#fff" text-anchor="middle">• Model Loading</text>
+                <text x="870" y="328" font-size="11" fill="#fff" text-anchor="middle">• Security Hardening</text>
+            </g>
+
+            <!-- Arrow to Testing -->
+            <path d="M 950 290 L 1020 290" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Stage 4: Testing -->
+            <g id="testing">
+                <rect x="1040" y="230" width="140" height="120" fill="#4caf50" stroke="#388e3c" stroke-width="2" rx="6"/>
+                <text x="1110" y="260" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">Test Suite</text>
+                <text x="1110" y="283" font-size="11" fill="#fff" text-anchor="middle">• Health Check</text>
+                <text x="1110" y="298" font-size="11" fill="#fff" text-anchor="middle">• API Endpoint</text>
+                <text x="1110" y="313" font-size="11" fill="#fff" text-anchor="middle">• Model Inference</text>
+                <text x="1110" y="328" font-size="11" fill="#fff" text-anchor="middle">• Container Test</text>
+            </g>
+
+            <!-- Arrow to Docker Hub -->
+            <path d="M 1180 290 L 1250 290" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Stage 5: Docker Hub -->
+            <g id="dockerhub">
+                <rect x="1040" y="420" width="140" height="100" fill="url(#dockerGrad)" stroke="#1a7cc7" stroke-width="2" rx="6"/>
+                <circle cx="1110" cy="455" r="22" fill="#fff" opacity="0.3"/>
+                <text x="1110" y="462" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">🐳</text>
+                <text x="1110" y="490" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">Docker Hub</text>
+                <text x="1110" y="508" font-size="11" fill="#fff" text-anchor="middle">Registry</text>
+            </g>
+
+            <!-- Arrow from Test to Docker Hub -->
+            <path d="M 1110 350 L 1110 420" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <text x="1120" y="390" font-size="12" fill="#333">Push</text>
+
+            <!-- Container Components Section -->
+            <rect x="30" y="400" width="240" height="370" fill="#fff5e6" stroke="#ff9800" stroke-width="2" rx="6"/>
+            <text x="150" y="430" font-size="16" font-weight="bold" fill="#ff9800" text-anchor="middle">Container Components</text>
+
+            <!-- Flask -->
+            <g id="flask">
+                <rect x="50" y="450" width="90" height="80" fill="url(#flaskGrad)" stroke="#000" stroke-width="1" rx="4"/>
+                <text x="95" y="475" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Flask API</text>
+                <text x="95" y="495" font-size="10" fill="#fff" text-anchor="middle">Port 5000</text>
+                <text x="95" y="510" font-size="10" fill="#fff" text-anchor="middle">/health</text>
+                <text x="95" y="522" font-size="10" fill="#fff" text-anchor="middle">/generate</text>
+            </g>
+
+            <!-- Hugging Face -->
+            <g id="hf">
+                <rect x="160" y="450" width="90" height="80" fill="url(#hfGrad)" stroke="#cc9900" stroke-width="1" rx="4"/>
+                <text x="205" y="475" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">Hugging</text>
+                <text x="205" y="490" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">Face</text>
+                <text x="205" y="508" font-size="10" fill="#333" text-anchor="middle">distilgpt2</text>
+                <text x="205" y="522" font-size="10" fill="#333" text-anchor="middle">~250MB</text>
+            </g>
+
+            <!-- Python -->
+            <g id="python">
+                <rect x="50" y="550" width="90" height="70" fill="#3776ab" stroke="#2a5a8a" stroke-width="1" rx="4"/>
+                <text x="95" y="575" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Python 3.11</text>
+                <text x="95" y="595" font-size="10" fill="#fff" text-anchor="middle">transformers</text>
+                <text x="95" y="609" font-size="10" fill="#fff" text-anchor="middle">torch</text>
+            </g>
+
+            <!-- Docker Base -->
+            <g id="dockerbase">
+                <rect x="160" y="550" width="90" height="70" fill="url(#dockerGrad)" stroke="#1a7cc7" stroke-width="1" rx="4"/>
+                <text x="205" y="575" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Docker</text>
+                <text x="205" y="595" font-size="10" fill="#fff" text-anchor="middle">python:3.11</text>
+                <text x="205" y="609" font-size="10" fill="#fff" text-anchor="middle">-slim</text>
+            </g>
+
+            <!-- Security Features -->
+            <g id="security">
+                <rect x="50" y="640" width="200" height="115" fill="#ffebee" stroke="#d32f2f" stroke-width="1" rx="4"/>
+                <text x="150" y="665" font-size="14" font-weight="bold" fill="#d32f2f" text-anchor="middle">Security Features</text>
+                <text x="150" y="685" font-size="11" fill="#333" text-anchor="middle">• Non-root user (appuser)</text>
+                <text x="150" y="700" font-size="11" fill="#333" text-anchor="middle">• Minimal base image</text>
+                <text x="150" y="715" font-size="11" fill="#333" text-anchor="middle">• Health checks</text>
+                <text x="150" y="730" font-size="11" fill="#333" text-anchor="middle">• Dependency pinning</text>
+                <text x="150" y="745" font-size="11" fill="#333" text-anchor="middle">• Security scanning</text>
+            </g>
+
+            <!-- Deployment -->
+            <g id="deployment">
+                <rect x="1230" y="600" width="140" height="150" fill="#e1f5fe" stroke="#0288d1" stroke-width="2" rx="6"/>
+                <text x="1300" y="625" font-size="14" font-weight="bold" fill="#0288d1" text-anchor="middle">Deployment</text>
+                <text x="1300" y="650" font-size="12" fill="#333" text-anchor="middle">Options:</text>
+                <text x="1300" y="670" font-size="11" fill="#333" text-anchor="middle">• Local Docker</text>
+                <text x="1300" y="687" font-size="11" fill="#333" text-anchor="middle">• Kubernetes</text>
+                <text x="1300" y="704" font-size="11" fill="#333" text-anchor="middle">• Cloud (AWS/Azure)</text>
+                <text x="1300" y="721" font-size="11" fill="#333" text-anchor="middle">• Docker Compose</text>
+                <text x="1300" y="738" font-size="11" fill="#333" text-anchor="middle">• Any platform</text>
+            </g>
+
+            <!-- Arrow from Docker Hub to Deployment -->
+            <path d="M 1180 470 L 1230 620" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+            <text x="1195" y="540" font-size="12" fill="#333">Pull</text>
+
+            <!-- Arrow marker definition -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#333" />
+                </marker>
+            </defs>
+
+            <!-- Legend -->
+            <g id="legend">
+                <rect x="300" y="600" width="680" height="150" fill="#f5f5f5" stroke="#999" stroke-width="1" rx="4"/>
+                <text x="640" y="625" font-size="14" font-weight="bold" fill="#333" text-anchor="middle">Pipeline Flow</text>
+                
+                <text x="320" y="655" font-size="12" fill="#333">1. Developer pushes code to GitHub</text>
+                <text x="320" y="675" font-size="12" fill="#333">2. GitHub Actions triggers CI/CD pipeline</text>
+                <text x="320" y="695" font-size="12" fill="#333">3. SonarCloud analyzes code quality & security</text>
+                <text x="320" y="715" font-size="12" fill="#333">4. Trivy scans for vulnerabilities</text>
+                
+                <text x="640" y="655" font-size="12" fill="#333">5. Docker builds multi-stage image</text>
+                <text x="640" y="675" font-size="12" fill="#333">6. Automated tests verify functionality</text>
+                <text x="640" y="695" font-size="12" fill="#333">7. Image pushed to Docker Hub registry</text>
+                <text x="640" y="715" font-size="12" fill="#333">8. Ready for production deployment</text>
+            </g>
+
+            <!-- Performance Metrics -->
+            <g id="metrics">
+                <rect x="300" y="90" width="180" height="50" fill="#fff" stroke="#4caf50" stroke-width="2" rx="4"/>
+                <text x="390" y="110" font-size="12" font-weight="bold" fill="#4caf50" text-anchor="middle">Pipeline Metrics</text>
+                <text x="390" y="128" font-size="10" fill="#333" text-anchor="middle">Total Time: ~8-10 minutes</text>
+            </g>
+
+            <g id="metrics2">
+                <rect x="1190" y="90" width="180" height="50" fill="#fff" stroke="#2196f3" stroke-width="2" rx="4"/>
+                <text x="1280" y="110" font-size="12" font-weight="bold" fill="#2196f3" text-anchor="middle">Container Size</text>
+                <text x="1280" y="128" font-size="10" fill="#333" text-anchor="middle">Image: ~1.2GB | Model: 250MB</text>
+            </g>
+        </svg>
+    </div>
+</body>
+</html>

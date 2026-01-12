@@ -23,30 +23,30 @@ env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  sonarcloud:
-    name: SonarCloud Code Analysis (Optional)
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
-      
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.python.version=3.11
-            -Dsonar.sources=.
-            -Dsonar.exclusions=**/venv/**,**/__pycache__/**,**/node_modules/**
-        continue-on-error: true
+  # sonarcloud:
+  #   name: SonarCloud Code Analysis (Optional)
+  #   runs-on: ubuntu-latest
+  #   continue-on-error: true
+  #   
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0  # Shallow clones should be disabled for better analysis
+  #     
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #       with:
+  #         args: >
+  #           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+  #           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+  #           -Dsonar.python.version=3.11
+  #           -Dsonar.sources=.
+  #           -Dsonar.exclusions=**/venv/**,**/__pycache__/**,**/node_modules/**
+  #       continue-on-error: true
 
   security-scan:
     name: Security Scanning
@@ -217,13 +217,16 @@ jobs:
     if: github.event_name != 'pull_request'
     
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ env.DOCKER_IMAGE }}
-          short-description: "Hugging Face model runner with automated builds"
+          short-description: "Containerized ML inference service with automated CI/CD"
           readme-filepath: ./README.md
         continue-on-error: true
       

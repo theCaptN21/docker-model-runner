@@ -37,20 +37,17 @@ docker-model-runner/
 - Docker Hub account
 - SonarCloud account (optional but recommended)
 
-### Step 1: Create GitHub Repository
+### Step 1: Fork and Clone Repository
 
-1. Create new repository on GitHub: `docker-model-runner`
-2. Clone locally:
+1. **Fork this repository** on GitHub (click "Fork" button at the top right)
+2. Clone **your fork** locally:
 ```bash
 git clone https://github.com/YOUR_USERNAME/docker-model-runner.git
 cd docker-model-runner
 ```
+Replace `YOUR_USERNAME` with your GitHub username.
 
-### Step 2: Add Project Files
-
-Copy all files from this project into your repository.
-
-### Step 3: Configure SonarCloud (Recommended)
+### Step 2: Configure SonarCloud (Recommended)
 
 **Why SonarCloud?** It provides automated code quality and security analysis on every push.
 
@@ -72,15 +69,24 @@ Copy all files from this project into your repository.
      - Expiration: No expiration (for personal projects)
    - **Copy the token immediately**
 
-4. **Add Token to GitHub**
+4. **Add Secrets to GitHub**
    - Go to your repository on GitHub
    - Settings → Secrets and variables → Actions
-   - Click "New repository secret"
+   - Click "New repository secret" and add these three secrets:
+   
+   **Secret 1: SONAR_TOKEN**
    - Name: `SONAR_TOKEN`
-   - Value: Paste your token
-   - Click "Add secret"
+   - Value: Your token from step 3
+   
+   **Secret 2: SONAR_PROJECT_KEY**
+   - Name: `SONAR_PROJECT_KEY`
+   - Value: Copy from SonarCloud Project Information (e.g., `theCaptN21_docker-model-runner`)
+   
+   **Secret 3: SONAR_ORGANIZATION**
+   - Name: `SONAR_ORGANIZATION`
+   - Value: Copy from SonarCloud Project Information (e.g., `thecaptn21`)
 
-### Step 4: Configure Docker Hub
+### Step 3: Configure Docker Hub
 
 1. **Create Docker Hub Access Token**
    - Log in to hub.docker.com
@@ -95,7 +101,7 @@ Copy all files from this project into your repository.
      - `DOCKERHUB_USERNAME`: Your Docker Hub username
      - `DOCKERHUB_TOKEN`: Your access token from above
 
-### Step 5: Test Locally (Optional but Recommended)
+### Step 4: Test Locally (Optional but Recommended)
 
 Before pushing to GitHub, verify everything works:
 
@@ -117,7 +123,7 @@ curl -X POST http://localhost:5000/generate \
 make clean
 ```
 
-### Step 6: Push to GitHub
+### Step 5: Push to GitHub
 
 ```bash
 git add .
@@ -125,7 +131,7 @@ git commit -m "Initial commit: Docker Model Runner"
 git push origin main
 ```
 
-### Step 7: Verify Pipeline
+### Step 6: Verify Pipeline
 
 1. Go to your repository → Actions tab
 2. Watch the workflow run (takes ~5-10 minutes)

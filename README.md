@@ -12,6 +12,12 @@ A **model runner** is a containerized service that loads a machine learning mode
 - 🔒 **Security Scanning**: Trivy and SonarCloud for vulnerability detection
 - 📊 **Code Quality**: Automated code analysis with SonarCloud
 
+## Architecture
+
+![CI/CD Architecture Diagram](./images/architecture-diagram.png)
+
+*The complete CI/CD pipeline from code push to deployment*
+
 ## Project Structure
 
 ```

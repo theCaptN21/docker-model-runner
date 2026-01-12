@@ -1,6 +1,6 @@
 # Docker Model Runner with CI/CD
 
-A production-ready Docker-based ML model runner using Hugging Face's distilgpt2 for text generation, with automated GitHub Actions pipeline for building, testing, and deploying secure Docker images.
+Docker-based ML model runner using Hugging Face's distilgpt2 for text generation, with automated GitHub Actions pipeline for building, testing, and deploying secure Docker images.
 
 ## What is a Model Runner?
 
@@ -42,7 +42,7 @@ docker-model-runner/
 1. **Fork this repository** on GitHub (click "Fork" button at the top right)
 2. Clone **your fork** locally:
 ```bash
-git clone https://github.com/YOUR_USERNAME/docker-model-runner.git
+git clone https://github.com/theCaptN21/docker-model-runner.git
 cd docker-model-runner
 ```
 Replace `YOUR_USERNAME` with your GitHub username.
